@@ -4,7 +4,7 @@
 
 
 template<typename ITER, typename DIFF, typename PR>
-void Pop_heap_by_index(ITER iterBeg, DIFF endOffSet, DIFF hole, PR& pr)
+void Pop_heap_to_bottom_by_index(ITER iterBeg, DIFF endOffSet, DIFF hole, PR& pr)
 {
 #define GET_LEFT_CHILD_INDEX(index) (((index+1)<<1) - 1)
 #define GET_RIGHT_CHILD_INDEX(index) ((index+1)<<1)
@@ -13,7 +13,7 @@ void Pop_heap_by_index(ITER iterBeg, DIFF endOffSet, DIFF hole, PR& pr)
 	if (endOffSet < 2 || hole == endOffSet - 1)
 		return;
 
-	std::remove_reference<decltype(*iterBeg)>::type holeValue = std::move(*(iterBeg+(endOffSet-1)));
+	typename std::remove_reference<decltype(*iterBeg)>::type holeValue = std::move(*(iterBeg+(endOffSet-1)));
 	*(iterBeg + (endOffSet - 1)) = std::move(*(iterBeg +hole));
 
 	endOffSet -= 1;
