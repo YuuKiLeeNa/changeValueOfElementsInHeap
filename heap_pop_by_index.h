@@ -1,5 +1,8 @@
-#pragma once
-#include<iterator>
+#ifndef __HEAP_OPERATION_H__
+#define __HEAP_OPERATION_H__
+#include<functional>
+
+
 template<typename ITER, typename DIFF, typename PR>
 void Pop_heap_by_index(ITER iterBeg, DIFF endOffSet, DIFF hole, PR& pr)
 {
@@ -7,26 +10,26 @@ void Pop_heap_by_index(ITER iterBeg, DIFF endOffSet, DIFF hole, PR& pr)
 #define GET_RIGHT_CHILD_INDEX(index) ((index+1)<<1)
 #define GET_PARENT_INDEX(index)	(((index+1)>>1) - 1)
 
-	if (endOffSet < 2 || hole == endOffSet-1)
+	if (endOffSet < 2 || hole == endOffSet - 1)
 		return;
 
-	std::iter_swap(iterBeg + hole, iterBeg + (endOffSet - 1));
+	std::remove_reference<decltype(*iterBeg)>::type holeValue = std::move(*(iterBeg+(endOffSet-1)));
+	*(iterBeg + (endOffSet - 1)) = std::move(*(iterBeg +hole));
 
 	endOffSet -= 1;
-	if (hole > 0 && pr(*(GET_PARENT_INDEX(hole) + iterBeg), *(hole + iterBeg))) 
+	if (hole > 0 && pr(*(GET_PARENT_INDEX(hole) + iterBeg), std::ref(holeValue)))
 	{
 		do
 		{
 			DIFF parentIndex = GET_PARENT_INDEX(hole);
-			std::iter_swap(parentIndex + iterBeg, hole + iterBeg);
+			*(iterBeg + hole) = std::move(*(parentIndex + iterBeg));
 			hole = parentIndex;
-		} while (hole > 0 && pr(*(GET_PARENT_INDEX(hole) + iterBeg), *(hole + iterBeg)));
+		} while (hole > 0 && pr(*(GET_PARENT_INDEX(hole) + iterBeg), std::ref(holeValue)));
 	}
 	else
 	{
-		while(endOffSet > GET_LEFT_CHILD_INDEX(hole))
+		while (endOffSet > GET_LEFT_CHILD_INDEX(hole))
 		{
-			//std::iterator_traits<ITER>::value_type* p = &*(iterBeg + GET_LEFT_CHILD_INDEX(hole));
 			auto leftChildIndex = GET_LEFT_CHILD_INDEX(hole);
 			auto rightChildIndex = GET_RIGHT_CHILD_INDEX(hole);
 			auto destIndex = leftChildIndex;
@@ -35,15 +38,18 @@ void Pop_heap_by_index(ITER iterBeg, DIFF endOffSet, DIFF hole, PR& pr)
 				if (pr(*(iterBeg + leftChildIndex), *(iterBeg + rightChildIndex)))
 					destIndex = rightChildIndex;
 			}
-			if (pr(*(iterBeg + hole), *(iterBeg + destIndex)))
+			if (pr(std::ref(holeValue), *(iterBeg + destIndex)))
 			{
-				std::iter_swap(iterBeg + hole, iterBeg + destIndex);
+				*(iterBeg + hole) = *(iterBeg + destIndex);
 				hole = destIndex;
 			}
 			else break;
-		} 
+		}
 	}
+	*(iterBeg + hole) = std::move(holeValue);
 #undef GET_LEFT_CHILD_INDEX
 #undef GET_RIGHT_CHILD_INDEX
 #undef GET_PARENT_INDEX
 }
+
+#endif
