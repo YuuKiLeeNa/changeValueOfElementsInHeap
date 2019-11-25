@@ -1,3 +1,4 @@
+
 #ifndef __HEAP_OPERATION_H__
 #define __HEAP_OPERATION_H__
 #include<functional>
@@ -13,18 +14,18 @@ void Pop_heap_to_bottom_by_index(ITER iterBeg, DIFF endOffSet, DIFF hole, PR& pr
 	if (endOffSet < 2 || hole == endOffSet - 1)
 		return;
 
-	typename std::remove_reference<decltype(*iterBeg)>::type holeValue = std::move(*(iterBeg+(endOffSet-1)));
-	*(iterBeg + (endOffSet - 1)) = std::move(*(iterBeg +hole));
+	typename std::remove_reference<decltype(*iterBeg)>::type holeValue = std::move(*(iterBeg + (endOffSet - 1)));
+	*(iterBeg + (endOffSet - 1)) = std::move(*(iterBeg + hole));
 
 	endOffSet -= 1;
-	if (hole > 0 && pr(*(GET_PARENT_INDEX(hole) + iterBeg), std::ref(holeValue)))
+	if (hole > 0 && pr(*(GET_PARENT_INDEX(hole) + iterBeg), holeValue))
 	{
 		do
 		{
 			DIFF parentIndex = GET_PARENT_INDEX(hole);
 			*(iterBeg + hole) = std::move(*(parentIndex + iterBeg));
 			hole = parentIndex;
-		} while (hole > 0 && pr(*(GET_PARENT_INDEX(hole) + iterBeg), std::ref(holeValue)));
+		} while (hole > 0 && pr(*(GET_PARENT_INDEX(hole) + iterBeg), holeValue));
 	}
 	else
 	{
@@ -38,7 +39,7 @@ void Pop_heap_to_bottom_by_index(ITER iterBeg, DIFF endOffSet, DIFF hole, PR& pr
 				if (pr(*(iterBeg + leftChildIndex), *(iterBeg + rightChildIndex)))
 					destIndex = rightChildIndex;
 			}
-			if (pr(std::ref(holeValue), *(iterBeg + destIndex)))
+			if (pr(holeValue, *(iterBeg + destIndex)))
 			{
 				*(iterBeg + hole) = *(iterBeg + destIndex);
 				hole = destIndex;
