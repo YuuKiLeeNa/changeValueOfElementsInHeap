@@ -11,7 +11,7 @@
 
 
 template<typename ITER, typename DIFF, typename PR>
-void Heap_pop_to_bottom_by_index(ITER iterBeg, DIFF endOffSet, DIFF hole, PR& pr)
+void Heap_pop_to_bottom_by_index(ITER iterBeg, DIFF endOffSet, DIFF hole, PR pr)
 {
 	if (endOffSet < 2 || hole == endOffSet - 1)
 		return;
@@ -53,7 +53,7 @@ void Heap_pop_to_bottom_by_index(ITER iterBeg, DIFF endOffSet, DIFF hole, PR& pr
 }
 
 template<typename ITER, typename DIFF, typename PREDICATE, typename CHANGEVALUE_TYPE, typename OPERATION>
-void Heap_change_index_value(ITER begIter, DIFF endOffSet, DIFF hole, PREDICATE &pr, const CHANGEVALUE_TYPE &v, OPERATION &op)
+void Heap_change_index_value(ITER begIter, DIFF endOffSet, DIFF hole, PREDICATE pr, const CHANGEVALUE_TYPE v, OPERATION op)
 {
 
 	typename std::remove_reference<decltype(*begIter)>::type holeValue = op(std::move(*(begIter + hole)), v);
